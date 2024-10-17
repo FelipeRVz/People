@@ -17,9 +17,21 @@ namespace People
 
 #if DEBUG
     		builder.Logging.AddDebug();
-#endif
+#endif      
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<PeopleViewModel>();
 
+            //builder.Services.AddTransient<MonkeyDetailsViewModel>();
+            //builder.Services.AddTransient<DetailsPage>();
+
+            builder.Services
+                .AddRefitClient<ReqresApi>(new RefitSettings())
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://reqres.in/api"));
+
+            
             return builder.Build();
         }
+
+
     }
 }

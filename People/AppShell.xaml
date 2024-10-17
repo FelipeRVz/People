@@ -8,7 +8,8 @@
     Title="People">
 
     <ShellContent
-        Title="Home"
+        Shell.NavBarIsVisible="True"
+        Title="People List"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
