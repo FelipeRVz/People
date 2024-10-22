@@ -16,19 +16,20 @@ namespace People
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif      
             builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<PeopleViewModel>();
 
-            //builder.Services.AddTransient<MonkeyDetailsViewModel>();
-            //builder.Services.AddTransient<DetailsPage>();
+            builder.Services.AddTransient<PeopleDetailViewModel>();
+            builder.Services.AddTransient<DetailsPage>();
 
             builder.Services
                 .AddRefitClient<ReqresApi>(new RefitSettings())
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://reqres.in/api"));
 
-            
+            builder.UseMauiApp<App>().UseSwipeCardView();
+
             return builder.Build();
         }
 

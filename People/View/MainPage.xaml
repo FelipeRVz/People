@@ -2,50 +2,51 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:model="clr-namespace:People.Model"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration;assembly=Microsoft.Maui.Controls"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             ios:Page.UseSafeArea="True"
              xmlns:viewmodel="clr-namespace:People.ViewModel"
              x:Class="People.MainPage"
              x:DataType="viewmodel:PeopleViewModel"
              Title="People from Reqres">
-    
-    
+
+
     <Grid ColumnDefinitions="*,*"
-          RowDefinitions="*,Auto">
+          RowDefinitions="*,Auto"
+          BackgroundColor="Black"
+          Padding="5">
+
 
         <RefreshView Grid.ColumnSpan="2"
-                     Command="{Binding GetPeopleCommand}"
-                     CommandParameter="{Binding CurrentPage}"
+                     Command="{Binding InitializeCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
-            
+
             <ContentView>
-                <CollectionView ItemsSource="{Binding PersonList}">
+                <CollectionView ItemsSource="{Binding PersonList}" SelectionMode="None">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="model:Person">
-                            <Grid ColumnDefinitions="125,*">
-                                <Image HeightRequest="125"
-                                       WidthRequest="125"
-                                       Source="{Binding avatar}"/>
-                                <Label Grid.Column="1" Text="{Binding first_name}"/>
 
+                            <Grid Padding="5" BackgroundColor="Blue">
+                                <Frame HeightRequest="125" BackgroundColor="Gray" Padding="5">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PeopleViewModel}}, Path=GotoDetailsCommand}"
+                                                              CommandParameter="{Binding .}"/>
+                                    </Frame.GestureRecognizers>
+                                    <Grid ColumnDefinitions="125,*" Padding="5" Background="Red">
+                                        <Image HeightRequest="125"
+                                                    WidthRequest="125"
+                                                    Source="{Binding avatar}"/>
+                                        <Label Grid.Column="1" Text="{Binding first_name}"/>
+                                    </Grid>
+                                </Frame>
                             </Grid>
+
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            
             </ContentView>
+
         </RefreshView>
-
-        <Button Grid.Row="1"
-                Grid.Column="0"
-                IsEnabled="{Binding IsPrevEnable}"
-                Command="{Binding PrevPageCommand}"
-                Text="Prev Page"/>
-
-        <Button Grid.Row="1"
-                Grid.Column="1"
-                IsEnabled="{Binding IsNextEnable}"
-                Command="{Binding NextPageCommand}"
-                Text="Next Page"/>
-
     </Grid>
 
 </ContentPage>

@@ -1,10 +1,8 @@
-﻿
-namespace People.ViewModel
+﻿namespace People.ViewModel
 {
     public partial class PeopleViewModel : BaseViewModel
-    {   
-        private readonly ReqresApi reqresApi;
-        private bool _isInitialized = false;
+    {
+        private ReqresApi reqresApi;
 
         public ObservableCollection<Person> PersonList { get; } = new();
 
@@ -22,12 +20,9 @@ namespace People.ViewModel
         [RelayCommand]
         async Task Initialize()
         {
-            if (_isInitialized) return;
-
             await GetApiInfoAsync();
-            await GetPeopleAsync(apiInfo.page);
+            await GetPeopleAsync();
 
-            _isInitialized = true;
         }
 
         [RelayCommand]
@@ -57,7 +52,7 @@ namespace People.ViewModel
         }
 
         [RelayCommand]
-        async Task GetPeopleAsync(int page)
+        async Task GetPeopleAsync()
         {
             if (IsBusy) return;
 
@@ -66,13 +61,16 @@ namespace People.ViewModel
                 IsBusy = true;
 
                 PersonList.Clear();
-                var response = await reqresApi.GetPersonList(page);
 
-                foreach (var person in response.persons)
+                for (int i = 1; i <= apiInfo.total_pages; i++)
                 {
-                    PersonList.Add(person);
-                }
+                    var response = await reqresApi.GetPersonList(i);
 
+                    foreach (var person in response.persons)
+                    {
+                        PersonList.Add(person);
+                    }
+                }
                 return;
             }
             catch (Exception ex)
@@ -87,32 +85,24 @@ namespace People.ViewModel
             }
         }
 
-
-        [ObservableProperty]
-        int currentPage = 1;
-
-        [ObservableProperty]
-        bool isPrevEnable = false, isNextEnable = true;
-
-
         [RelayCommand]
-        async Task PrevPage()
+        async Task GotoDetailsAsync(Person person)
         {
-            CurrentPage--;
-            if (CurrentPage == 1) IsPrevEnable = false;
-            if (CurrentPage < apiInfo.total_pages) IsNextEnable = true;
+            if(person is null) return;
 
-            await GetPeopleAsync(CurrentPage);
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(DetailsPage), true, new Dictionary<string, object>
+                {
+                    {"Person", person }
+                });
+            }
+            catch (Exception ex)
+            {
+                await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+                return;
+            }
         }
 
-        [RelayCommand]
-        async Task NextPage()
-        {
-            CurrentPage++;
-            if (CurrentPage == apiInfo.total_pages) IsNextEnable = false;
-            if (CurrentPage > 1) IsPrevEnable = true;
-
-            await GetPeopleAsync(CurrentPage);
-        }
     }
 }

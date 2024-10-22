@@ -10,3 +10,4 @@ global using System.Diagnostics;
 global using System.Runtime.CompilerServices;
 global using System.Text.Json;
 global using Refit;
+global using Plugin.Maui.SwipeCardView;
