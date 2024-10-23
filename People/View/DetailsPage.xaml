@@ -5,14 +5,15 @@
              xmlns:swipe="clr-namespace:Plugin.Maui.SwipeCardView;assembly=Plugin.Maui.SwipeCardView"
              x:Class="People.View.DetailsPage"
              x:DataType="viewmodel:PeopleDetailViewModel"
-             Title="{Binding Person.last_name}">
+             Title="{Binding Person.first_name}">
     
     <ContentView>
-        <Grid ColumnDefinitions="*,*"
+        <Grid ColumnDefinitions="250,*"
               RowDefinitions="*">
             <Image Grid.Column="0"
+                   HeightRequest="200"
                    Source="{Binding Person.avatar}"/>
-            <VerticalStackLayout Grid.Column="1">
+            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
                 <Label Text="{Binding Person.first_name}" FontSize="20"/>
                 <Label Text="{Binding Person.last_name}"/>
                 <Label Text="{Binding Person.email}"/>

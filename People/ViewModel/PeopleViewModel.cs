@@ -104,5 +104,12 @@
             }
         }
 
+        [RelayCommand]
+        public void Delete(Person person)
+        {
+            PersonList.Remove(person);
+            return;
+        }
+
     }
 }
