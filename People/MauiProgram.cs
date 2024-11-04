@@ -27,8 +27,8 @@ namespace People
             builder.Services
                 .AddRefitClient<ReqresApi>(new RefitSettings())
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://reqres.in/api"));
-
-            builder.UseMauiApp<App>().UseSwipeCardView();
+            builder.Services.AddSingleton<IReqresService,ReqresService>();
+            builder.Services.AddSingleton<ILogService,LogService>();
 
             return builder.Build();
         }

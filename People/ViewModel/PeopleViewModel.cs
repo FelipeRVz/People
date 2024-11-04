@@ -2,54 +2,21 @@
 {
     public partial class PeopleViewModel : BaseViewModel
     {
-        private ReqresApi reqresApi;
+        IReqresService reqresService;
+        ILogService logService;
 
         public ObservableCollection<Person> PersonList { get; } = new();
-
-        public ApiInfo apiInfo = new ApiInfo();
 
         [ObservableProperty]
         bool isRefreshing;
 
-        public PeopleViewModel(ReqresApi reqresApi)
+        public PeopleViewModel(IReqresService reqresService, ILogService logService)
         {
-            this.reqresApi = reqresApi;
-            _ = Initialize();
+            this.reqresService = reqresService;
+            this.logService = logService;
+            _ = GetPeopleAsync();
         }
 
-        [RelayCommand]
-        async Task Initialize()
-        {
-            await GetApiInfoAsync();
-            await GetPeopleAsync();
-
-        }
-
-        [RelayCommand]
-        async Task GetApiInfoAsync()
-        {
-            try
-            {
-                IsBusy = true;
-
-                var response = await reqresApi.GetApiInfo();
-
-                apiInfo.total = response.total;
-                apiInfo.page = response.page;
-                apiInfo.total_pages = response.total_pages;
-                apiInfo.total = response.total;
-            }
-            catch (Exception ex)
-            {
-                await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
-                return;
-            }
-            finally
-            {
-                IsBusy = false;
-                IsRefreshing = false;
-            }
-        }
 
         [RelayCommand]
         async Task GetPeopleAsync()
@@ -60,22 +27,20 @@
             {
                 IsBusy = true;
 
-                PersonList.Clear();
+                MainThread.BeginInvokeOnMainThread(() =>{PersonList.Clear();});
 
-                for (int i = 1; i <= apiInfo.total_pages; i++)
-                {
-                    var response = await reqresApi.GetPersonList(i);
+                var people = await reqresService.GetPersonListAsync();
 
-                    foreach (var person in response.persons)
-                    {
-                        PersonList.Add(person);
-                    }
-                }
+                foreach (Person person in people)
+                    MainThread.BeginInvokeOnMainThread(() => { PersonList.Add(person); });
+                  
                 return;
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+                string msg = "Error getting people list: " + ex.Message;
+                logService.LogWrite(msg);
+                await Shell.Current.DisplayAlert("Error!", msg , "OK");
                 return;
             }
             finally
@@ -88,7 +53,9 @@
         [RelayCommand]
         async Task GotoDetailsAsync(Person person)
         {
+            if(IsBusy) return;
             if(person is null) return;
+            logService.LogWrite("pagina detalle de: " + person.first_name);
 
             try
             {
@@ -99,7 +66,9 @@
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error!", ex.Message, "OK");
+                string msg = "Error with detail view: " + ex.Message;
+                logService.LogWrite(msg);
+                await Shell.Current.DisplayAlert("Error!", msg, "OK");
                 return;
             }
         }
@@ -107,8 +76,25 @@
         [RelayCommand]
         public void Delete(Person person)
         {
-            PersonList.Remove(person);
-            return;
+            if (IsBusy) return;
+            if (person is null) return;
+            try
+            {
+                IsBusy = true;
+                MainThread.BeginInvokeOnMainThread(() => { PersonList.Remove(person); });
+                return;
+            }
+            catch(Exception ex) 
+            {
+                string msg = "Error with deleting person: " + ex.Message;
+                logService.LogWrite(msg);
+                Shell.Current.DisplayAlert("Error!", msg, "OK");
+                return;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
     }

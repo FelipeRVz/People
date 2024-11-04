@@ -17,7 +17,7 @@
 
 
         <RefreshView Grid.ColumnSpan="2"
-                     Command="{Binding InitializeCommand}"
+                     Command="{Binding GetPeopleCommand}"
                      IsRefreshing="{Binding IsRefreshing}">
 
             <ContentView>
@@ -26,6 +26,7 @@
                         <DataTemplate x:DataType="model:Person">
 
                             <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+                                
                                 <SwipeView.RightItems>
                                     <SwipeItems SwipeBehaviorOnInvoked="Close">
                                         <SwipeItem Text="Delete" 
@@ -34,14 +35,14 @@
                                                    CommandParameter="{Binding .}"/>
                                     </SwipeItems>
                                 </SwipeView.RightItems>
-
+        
                                 <Grid Padding="5">
-                                    <Frame Padding="0">
-                                        <Frame.GestureRecognizers>
+                                    <Border Padding="0" StrokeShape="RoundRectangle 20">
+                                        <Border.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PeopleViewModel}}, Path=GotoDetailsCommand}"
                                                               CommandParameter="{Binding .}"/>
-                                        </Frame.GestureRecognizers>
-                                        <Grid ColumnDefinitions="131,*" BackgroundColor="LightSlateGray">
+                                        </Border.GestureRecognizers>
+                                        <Grid ColumnDefinitions="Auto,*" BackgroundColor="LightSlateGray">
                                             <Border StrokeShape="RoundRectangle 90" >
                                                 <Image HeightRequest="130"
                                                     WidthRequest="130"
@@ -55,7 +56,7 @@
                                                    TextColor="WhiteSmoke"/>
 
                                         </Grid>
-                                    </Frame>
+                                    </Border>
                                 </Grid>
                             </SwipeView>
 

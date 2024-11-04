@@ -7,6 +7,6 @@ namespace People.ViewModel
         bool isBusy;
 
         [ObservableProperty]
-        string title;
+        string title = "";
     }
 }
