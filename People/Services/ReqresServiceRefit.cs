@@ -1,21 +1,20 @@
-﻿
-using System.Reflection;
+﻿using static People.Services.Functions;
 
 namespace People.Services
 {
 
-    public class ReqresService : IReqresService
+    public class ReqresServiceRefit : IReqresService
     {
-        private int page {  get; set; }
+        private int page { get; set; }
         private int per_page { get; set; }
-        private int total {  get; set; }
-        public int total_pages {  get; set; }
+        private int total { get; set; }
+        public int total_pages { get; set; }
 
         ReqresApi reqresApi;
 
-        public ReqresService(ReqresApi reqruesApi)
+        public ReqresServiceRefit(ReqresApi reqresApi)
         {
-            this.reqresApi = reqruesApi;
+            this.reqresApi = reqresApi;
         }
 
         public async Task<List<Person>> GetPersonListAsync()
@@ -26,7 +25,7 @@ namespace People.Services
             for (int i = 1; i <= total_pages; i++)
             {
                 var plDTO = await reqresApi.GetPersonListAsync(i);
-                
+
                 foreach (PersonDTO pdto in plDTO.persons)
                 {
                     person = new();
@@ -48,24 +47,11 @@ namespace People.Services
 
         public void GetApiInfo()
         {
-            var apiInfo =  reqresApi.GetApiInfoAsync();
+            var apiInfo = reqresApi.GetApiInfoAsync();
             CopyPropertyAtoB(apiInfo.Result, this);
         }
 
-        private void CopyPropertyAtoB(object a, object b)
-        {
-            Type aType = a.GetType();
-            Type bType = b.GetType();
-            foreach (PropertyInfo aProperty in aType.GetProperties())
-            {
-                PropertyInfo? bProperty = bType.GetProperty(aProperty.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (bProperty != null)
-                    if (bProperty.CanWrite)
-                        bProperty.SetValue(b, aProperty.GetValue(a));
-            }
-
-        }
-
     }
+
 }
 

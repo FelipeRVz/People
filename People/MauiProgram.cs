@@ -27,7 +27,8 @@ namespace People
             builder.Services
                 .AddRefitClient<ReqresApi>(new RefitSettings())
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://reqres.in/api"));
-            builder.Services.AddSingleton<IReqresService,ReqresService>();
+            //builder.Services.AddSingleton<IReqresService,ReqresServiceRefit>();
+            builder.Services.AddSingleton<IReqresService, ReqresServiceRestSharp>();
             builder.Services.AddSingleton<ILogService,LogService>();
 
             return builder.Build();
